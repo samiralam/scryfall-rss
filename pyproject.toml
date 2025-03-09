@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scryfall-rss"
+version = "0.1.0"
+description = "Generate RSS feeds from Scryfall search queries"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+dependencies = [
+    "requests>=2.28.0",
+    "feedgenerator>=2.0.0",
+]
+
+[project.scripts]
+scryfall-rss = "scryfall_rss:main"
+
+[tool.setuptools]
+packages = ["scryfall_rss"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.black]
+line-length = 100
