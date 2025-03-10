@@ -1,0 +1,56 @@
+name: Scryfall RSS Feed Generator
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight UTC
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  generate-rss:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Grant write access to repository contents
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Run Scryfall RSS script
+      run: python scryfall_rss.py '((t:angel c=w) or (t:demon c=b) or (t:dragon c=r) or (t:sphinx c=u) or (t:wurm c=g)) not:reprint order:released' --output scryfall_feed.xml --title "MTG Iconics" --description "New angels, demons, dragons, sphinxes, and wurms"
+
+    - name: Commit and push changes to rss-feed branch
+      run: |
+        if [[ -n "$(git status --porcelain)" ]]; then
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Create and checkout rss-feed branch
+          git checkout -B rss-feed
+          
+          git add scryfall_feed.xml
+          git commit -m "Update Scryfall RSS feed"
+          git push -f origin rss-feed
+          
+          echo "RSS feed updated and pushed to rss-feed branch"
+        else
+          echo "No changes to commit"
+        fi

@@ -69,20 +69,22 @@ def create_scryfall_rss(query, output_file='scryfall_feed.xml', feed_title=None,
             except ValueError:
                 release_date = datetime.datetime.now()
             
-            # Get the card image if available
-            image_url = card.get('image_uris', {}).get('normal', '')
+            # Initialize description
+            description = ""
             
-            # Create the description with card details and image
-            description = f"<p><strong>{card.get('name', '')}</strong></p>"
-            description += f"<p>{card.get('type_line', '')}</p>"
-            if card.get('oracle_text'):
-                description += f"<p>{card.get('oracle_text', '').replace('\n', '<br>')}</p>"
-            if image_url:
-                description += f"<p><img src='{image_url}' alt='{card.get('name', '')}'></p>"
-            
-            # Add card price if available
-            if card.get('prices', {}).get('usd'):
-                description += f"<p>Price: ${card.get('prices', {}).get('usd')}</p>"
+            # Check if this is a double-faced card
+            if card.get('card_faces') and len(card.get('card_faces', [])) > 0:
+                # For double-faced cards, get images from each face
+                for i, face in enumerate(card.get('card_faces', [])):
+                    face_image_url = face.get('image_uris', {}).get('normal', '')
+                    if face_image_url:
+                        face_name = face.get('name', f'Face {i+1}')
+                        description += f"<p><img src='{face_image_url}' alt='{face_name}'></p>"
+            else:
+                # For single-faced cards, get the image as before
+                image_url = card.get('image_uris', {}).get('normal', '')
+                if image_url:
+                    description = f"<p><img src='{image_url}' alt='{card.get('name', '')}'></p>"
             
             # Add the card to the feed
             feed.add_item(

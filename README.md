@@ -2,13 +2,17 @@
 
 ## Description
 
-This project generates an RSS feed from a specified Scryfall search query. The script can be run manually or set up to automatically update periodically using cron jobs or scheduled tasks.
+This project generates an RSS feed from a specified Scryfall search query. The script can be run manually or set up to automatically update periodically using GitHub Actions, cron jobs, or scheduled tasks.
 
 ## Prerequisites
 
-The requirements and dependencies are listed in the `pyproject.toml` file.
+Python 3.7 or higher is required.
 
-You can install these dependencies using pip:
+The dependencies are:
+- requests >= 2.28.0
+- feedgenerator >= 2.0.0
+
+These are listed in the `pyproject.toml` file and can be installed using pip:
 
 ```bash
 pip install -e .
@@ -65,6 +69,24 @@ To keep your RSS feed updated automatically, run the script as a cron job.
 - `--output` or `-o`: Specify the output file path
 - `--title` or `-t`: Set a custom title for the RSS feed
 - `--description` or `-d`: Set a custom description for the RSS feed
+
+## GitHub Actions Workflow
+
+This repository includes a GitHub Actions workflow that automatically generates and updates the RSS feed daily. The workflow:
+
+1. Runs daily
+2. Generates the RSS feed using the Scryfall query specified in `.github/workflows/scryfall_rss.yml`
+3. Commits and pushes the updated feed to the `rss-feed` branch
+
+You can also manually trigger the workflow from the Actions tab in the GitHub repository.
+
+## Importing the feed into your RSS reader
+
+Point your RSS reader to the raw GitHub user content link of the feed on the `rss-feed` branch. For this repo, that URL would be:
+
+```
+https://raw.githubusercontent.com/samiralam/scryfall-rss/refs/heads/rss-feed/scryfall_feed.xml
+```
 
 ## License
 
