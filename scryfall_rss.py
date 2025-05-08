@@ -53,8 +53,7 @@ def create_scryfall_rss(query, output_file='scryfall_feed.xml', feed_title=None,
             title=feed_title,
             link=f"https://scryfall.com/search?q={encoded_query}",
             description=feed_description,
-            language="en",
-            lastBuildDate=datetime.datetime.now()
+            language="en"
         )
         
         # Add each card as an item in the feed
@@ -77,8 +76,11 @@ def create_scryfall_rss(query, output_file='scryfall_feed.xml', feed_title=None,
             # Initialize description
             description = ""
             
-            # Check if this is a double-faced card
-            if card.get('card_faces') and len(card.get('card_faces', [])) > 0:
+            # Check the card layout type and handle accordingly
+            layout = card.get('layout', '')
+            
+            # For double-faced cards (transform, modal_dfc, etc.), get images from each face
+            if card.get('card_faces') and len(card.get('card_faces', [])) > 0 and layout not in ['adventure', 'split', 'flip', 'meld']:
                 # For double-faced cards, get images from each face
                 for i, face in enumerate(card.get('card_faces', [])):
                     face_image_url = face.get('image_uris', {}).get('normal', '')
@@ -86,7 +88,7 @@ def create_scryfall_rss(query, output_file='scryfall_feed.xml', feed_title=None,
                         face_name = face.get('name', f'Face {i+1}')
                         description += f"<p><img src='{face_image_url}' alt='{face_name}'></p>"
             else:
-                # For single-faced cards, get the image as before
+                # For single-faced cards and split cards (adventure, split, flip, meld), get the image from the main card
                 image_url = card.get('image_uris', {}).get('normal', '')
                 if image_url:
                     description = f"<p><img src='{image_url}' alt='{card.get('name', '')}'></p>"
