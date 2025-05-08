@@ -58,7 +58,7 @@ def create_scryfall_rss(query, output_file='scryfall_feed.xml', feed_title=None,
         )
         
         # Add each card as an item in the feed
-        for card in data['data']:
+        for index, card in enumerate(data['data']):
             # Create a unique ID for the card
             card_id = card.get('id', '')
             
@@ -66,6 +66,11 @@ def create_scryfall_rss(query, output_file='scryfall_feed.xml', feed_title=None,
             release_date_str = card.get('released_at', '')
             try:
                 release_date = datetime.datetime.strptime(release_date_str, '%Y-%m-%d')
+                # Add a small time offset based on the card's position in the results
+                # This ensures cards with the same release date maintain their order
+                # Since the API returns newest items first, we add a time offset that
+                # preserves this ordering (first items get the most recent timestamps)
+                release_date = release_date + datetime.timedelta(seconds=-index)
             except ValueError:
                 release_date = datetime.datetime.now()
             

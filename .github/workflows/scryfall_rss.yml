@@ -35,7 +35,7 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Run Scryfall RSS script
-      run: python scryfall_rss.py '((t:angel c=w) or (t:demon c=b) or (t:dragon c=r) or (t:sphinx c=u) or (t:wurm c=g)) not:reprint order:released' --output scryfall_feed.xml --title "MTG Iconics" --description "New angels, demons, dragons, sphinxes, and wurms"
+      run: python scryfall_rss.py '((t:angel c=w) or (t:demon c=b) or (t:dragon c=r) or (t:sphinx c=u) or (t:wurm c=g)) not:reprint game:paper' --output scryfall_feed.xml --title "MTG Iconics" --description "New angels, demons, dragons, sphinxes, and wurms"
 
     - name: Commit and push changes to rss-feed branch
       run: |
