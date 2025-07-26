@@ -35,7 +35,7 @@ jobs:
           ${{ runner.os }}-pip-
 
     - name: Run Scryfall RSS script
-      run: python scryfall_rss.py 'game:paper not:extra' --output scryfall_feed.xml --title "MTG Cards" --description "A feed of Magic cards as they are released."
+      run: python scryfall_rss.py '((t:angel c=w) or (t:demon c=b) or (t:dragon c=r) or (t:sphinx c=u) or (t:wurm c=g)) not:reprint' --output scryfall_feed.xml --title "MTG Cards" --description "A feed of Magic cards as they are released."
 
     - name: Commit and push changes to rss-feed branch
       run: |
